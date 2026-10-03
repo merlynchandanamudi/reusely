@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REUSELY — Campus Rent & Reuse</title>
+<style>
+:root{
+  --bg:#07111c;--panel:rgba(12,24,38,.72);--panel2:rgba(17,34,51,.82);
+  --text:#eef7ff;--muted:#91a6b8;--line:rgba(255,255,255,.10);
+  --accent:#5ee7c5;--accent2:#72a7ff;--warning:#ffd166;--danger:#ff7187;
+  --shadow:0 25px 80px rgba(0,0,0,.35);--radius:22px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+#app{min-height:100vh}
+.bg-orb{position:fixed;border-radius:50%;filter:blur(50px);opacity:.20;pointer-events:none;z-index:-2}
+.orb1{width:360px;height:360px;background:#37e0b1;top:-100px;left:-100px;animation:float1 12s ease-in-out infinite}
+.orb2{width:420px;height:420px;background:#4f7cff;right:-160px;top:20%;animation:float2 15s ease-in-out infinite}
+.orb3{width:300px;height:300px;background:#a46cff;left:35%;bottom:-180px;animation:float3 13s ease-in-out infinite}
+@keyframes float1{50%{transform:translate(80px,70px)}}
+@keyframes float2{50%{transform:translate(-80px,90px)}}
+@keyframes float3{50%{transform:translate(50px,-70px)}}
+.glow-line{position:fixed;inset:auto 0 0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.35;z-index:5}
+.page{min-height:100vh}
+.container{width:min(1180px,92%);margin:auto}
+.glass{background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(20px);box-shadow:var(--shadow)}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(5,13,22,.78);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.nav{height:72px;display:flex;align-items:center;gap:24px}
+.logo{font-weight:900;letter-spacing:2px;font-size:21px;color:var(--text);display:flex;gap:9px;align-items:center}
+.logo-mark{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#061018;font-weight:1000;box-shadow:0 0 25px rgba(94,231,197,.25)}
+.navlinks{display:flex;gap:5px;flex:1}
+.navlinks button{background:transparent;color:var(--muted);border:0;padding:10px 12px;border-radius:12px}
+.navlinks button:hover,.navlinks button.active{background:rgba(255,255,255,.07);color:#fff}
+.nav-actions{display:flex;align-items:center;gap:10px}
+.icon-btn{width:42px;height:42px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#fff;border-radius:13px;position:relative}
+.badge-dot{position:absolute;right:7px;top:6px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#5ee7c5,#6d8cff);color:#061018;font-weight:900}
+.btn{border:0;border-radius:13px;padding:11px 16px;font-weight:750;transition:.2s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{transform:translateY(-2px)}
+.primary{background:linear-gradient(135deg,var(--accent),#48c8b0);color:#051018;box-shadow:0 10px 30px rgba(94,231,197,.18)}
+.secondary{background:rgba(255,255,255,.07);border:1px solid var(--line);color:#fff}
+.danger{background:rgba(255,113,135,.12);color:#ff9aaa;border:1px solid rgba(255,113,135,.25)}
+.ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.page-section{padding:42px 0 70px}
+.hero{padding:55px 0 30px;display:grid;grid-template-columns:1.35fr .65fr;gap:28px;align-items:center}
+.eyebrow{color:var(--accent);font-size:13px;font-weight:850;letter-spacing:1.8px;text-transform:uppercase}
+h1{font-size:clamp(38px,5vw,70px);line-height:.98;margin:13px 0 20px;letter-spacing:-3px}
+h2{font-size:30px;margin:0 0 10px;letter-spacing:-1px}
+h3{margin:0 0 8px}
+.lead{font-size:18px;line-height:1.7;color:var(--muted);max-width:690px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}
+.hero-card{padding:22px;border-radius:26px;position:relative;overflow:hidden;min-height:300px;background-image:linear-gradient(180deg,rgba(4,13,22,.08),rgba(4,13,22,.88)),url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80");background-size:cover;background-position:center}
+.hero-card:after{content:"";position:absolute;inset:auto -20% -45% -20%;height:180px;background:rgba(94,231,197,.22);filter:blur(45px)}
+.floating-chip{position:absolute;z-index:2;padding:12px 15px;border-radius:16px;background:rgba(8,18,28,.75);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(14px);animation:chipfloat 5s ease-in-out infinite}
+.chip1{top:22px;right:20px}.chip2{bottom:25px;left:20px;animation-delay:1.5s}
+@keyframes chipfloat{50%{transform:translateY(-12px)}}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
+.stat{padding:20px;border-radius:20px}.stat strong{font-size:28px}.stat span{display:block;color:var(--muted);font-size:13px;margin-top:5px}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:15px;margin:28px 0 18px}
+.searchbar{display:flex;gap:10px;margin:15px 0 20px}
+.input,.select,.textarea{width:100%;padding:13px 14px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.055);color:#fff;outline:none}
+.input:focus,.select:focus,.textarea:focus{border-color:rgba(94,231,197,.55);box-shadow:0 0 0 3px rgba(94,231,197,.08)}
+.select option{background:#0c1825}.textarea{min-height:100px;resize:vertical}
+.filters{display:flex;gap:9px;flex-wrap:wrap}
+.filter{padding:9px 13px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted)}
+.filter.active{background:rgba(94,231,197,.12);border-color:rgba(94,231,197,.4);color:var(--accent)}
+.items-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.item-card{overflow:hidden;border-radius:22px;transition:.25s;position:relative}
+.item-card:hover{transform:translateY(-5px);border-color:rgba(255,255,255,.2)}
+.item-img{height:190px;background-size:cover;background-position:center;position:relative}
+.item-img:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.55))}
+.item-body{padding:17px}
+.item-title{font-size:18px;font-weight:850}
+.meta{color:var(--muted);font-size:13px;line-height:1.6}
+.price{color:var(--accent);font-weight:850;font-size:16px}
+.card-row{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:14px}
+.tag{display:inline-flex;padding:5px 9px;border-radius:99px;background:rgba(114,167,255,.12);color:#a9c7ff;font-size:11px;font-weight:800}
+.tag.green{background:rgba(94,231,197,.10);color:var(--accent)}
+.tag.yellow{background:rgba(255,209,102,.11);color:var(--warning)}
+.heart{position:absolute;top:12px;right:12px;z-index:3;width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.42);color:white}
+.empty{padding:45px;text-align:center;color:var(--muted);border-radius:22px}
+.modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);display:none;place-items:center;z-index:100;padding:20px}
+.modal-wrap.show{display:grid}
+.modal{width:min(650px,100%);max-height:90vh;overflow:auto;border-radius:25px;padding:24px}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.close{background:transparent;border:0;color:#fff;font-size:24px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.full{grid-column:1/-1}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+.toast{position:fixed;right:20px;bottom:20px;z-index:200;padding:14px 18px;border-radius:15px;background:#102233;border:1px solid rgba(94,231,197,.3);box-shadow:var(--shadow);transform:translateY(120px);opacity:0;transition:.3s}
+.toast.show{transform:translateY(0);opacity:1}
+.auth{min-height:100vh;display:grid;place-items:center;padding:25px;position:relative;overflow:hidden}
+.auth-shell{width:min(980px,100%);display:grid;grid-template-columns:1fr 1fr;border-radius:28px;overflow:hidden}
+.auth-art{padding:40px;min-height:620px;background-image:linear-gradient(145deg,rgba(3,12,20,.2),rgba(3,12,20,.88)),url("https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1000&q=80");background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:flex-end}
+.auth-form{padding:42px;background:rgba(9,19,30,.94)}
+.auth-tabs{display:flex;gap:7px;margin:20px 0}
+.auth-tabs button{flex:1;padding:11px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--muted)}
+.auth-tabs button.active{background:rgba(94,231,197,.1);color:var(--accent);border-color:rgba(94,231,197,.35)}
+.demo{font-size:12px;color:var(--muted);margin-top:15px;padding:12px;border-radius:12px;background:rgba(255,255,255,.04)}
+.dashboard-grid{display:grid;grid-template-columns:1.4fr .6fr;gap:18px}
+.panel{padding:22px;border-radius:22px}
+.activity{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.activity:last-child{border-bottom:0}.activity-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(94,231,197,.1)}
+.progress{height:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:9px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:inherit}
+.trust{display:flex;align-items:center;gap:12px}.stars{color:#ffd166;letter-spacing:2px}
+.profile-head{display:flex;gap:20px;align-items:center;padding:25px}.big-avatar{width:85px;height:85px;border-radius:27px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#07111c;font-size:27px;font-weight:1000}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.kpi div{padding:14px;background:rgba(255,255,255,.04);border-radius:15px;text-align:center}.kpi b{font-size:20px}.kpi small{display:block;color:var(--muted)}
+.timeline{position:relative;padding-left:28px}.timeline:before{content:"";position:absolute;left:8px;top:0;bottom:0;width:2px;background:rgba(255,255,255,.1)}.step{position:relative;padding:0 0 22px}.step:before{content:"";position:absolute;left:-25px;top:2px;width:12px;height:12px;border-radius:50%;background:#25374a;border:2px solid #07111c}.step.done:before{background:var(--accent)}.step strong{display:block}.step span{font-size:12px;color:var(--muted)}
+.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;padding:13px 9px;border-bottom:1px solid var(--line);font-size:13px}.table th{color:var(--muted);font-weight:600}
+.footer{text-align:center;color:var(--muted);padding:30px 0}
+.mobile-menu{display:none}
+@media(max-width:850px){
+ .hero,.dashboard-grid,.auth-shell{grid-template-columns:1fr}
+ .auth-art{min-height:280px}.items-grid{grid-template-columns:repeat(2,1fr)}
+ .stat-grid{grid-template-columns:repeat(2,1fr)}.navlinks{display:none}.mobile-menu{display:block}
+}
+@media(max-width:580px){
+ .items-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}
+ .hero{padding-top:30px}h1{font-size:44px}.nav{height:64px}.nav-actions .btn{display:none}
+ .searchbar{flex-direction:column}.stat-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="bg-orb orb1"></div><div class="bg-orb orb2"></div><div class="bg-orb orb3"></div><div class="glow-line"></div>
+<div id="app"></div>
+<div id="modalRoot"></div>
+<div id="toast" class="toast"></div>
+
+<script>
+const img = {
+  laptop:"https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=80",
+  books:"https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=900&q=80",
+  calculator:"https://images.unsplash.com/photo-1587145820266-a5951ee6f620?auto=format&fit=crop&w=900&q=80",
+  camera:"https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=80",
+  cycle:"https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=900&q=80",
+  drill:"https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=900&q=80",
+  notes:"https://images.unsplash.com/photo-1456324504439-367cee3b3c32?auto=format&fit=crop&w=900&q=80",
+  projector:"https://images.unsplash.com/photo-1492724441997-5dc865305da7?auto=format&fit=crop&w=900&q=80"
+};
+
+const seedItems = [
+ {id:1,title:"HP Student Laptop",cat:"Electronics",type:"Rent",price:180,unit:"week",location:"RK Valley Campus",owner:"Arjun K.",rating:4.9,img:img.laptop,desc:"Reliable laptop for coding, assignments and short-term projects.",available:true},
+ {id:2,title:"Engineering Textbook Set",cat:"Books",type:"Borrow",price:0,unit:"free",location:"Library Block",owner:"Meghana R.",rating:4.8,img:img.books,desc:"First-year engineering textbooks. Borrow for up to 14 days.",available:true},
+ {id:3,title:"Scientific Calculator",cat:"Study",type:"Borrow",price:0,unit:"free",location:"Boys Hostel B",owner:"Vikram S.",rating:4.7,img:img.calculator,desc:"Casio-style scientific calculator for exams and lab work.",available:true},
+ {id:4,title:"DSLR Camera",cat:"Creative",type:"Rent",price:250,unit:"day",location:"Campus Center",owner:"Ananya P.",rating:4.9,img:img.camera,desc:"DSLR for events, projects and content creation.",available:true},
+ {id:5,title:"Campus Bicycle",cat:"Transport",type:"Rent",price:80,unit:"day",location:"North Gate",owner:"Rahul M.",rating:4.6,img:img.cycle,desc:"Well-maintained bicycle for campus travel.",available:true},
+ {id:6,title:"Power Drill Kit",cat:"Tools",type:"Borrow",price:0,unit:"free",location:"Workshop Lane",owner:"Sai K.",rating:4.8,img:img.drill,desc:"Useful for project builds and basic repairs.",available:true},
+ {id:7,title:"Project Notes Bundle",cat:"Study",type:"Borrow",price:0,unit:"free",location:"Academic Block",owner:"Divya N.",rating:4.9,img:img.notes,desc:"Semester notes and previous revision material.",available:true},
+ {id:8,title:"Mini Projector",cat:"Electronics",type:"Rent",price:120,unit:"day",location:"Innovation Hub",owner:"Kiran P.",rating:4.8,img:img.projector,desc:"Portable projector for presentations and team demos.",available:true}
+];
+
+let state = {
+  user: JSON.parse(localStorage.getItem("reuseUser") || "null"),
+  items: JSON.parse(localStorage.getItem("reuseItems") || "null") || seedItems,
+  requests: JSON.parse(localStorage.getItem("reuseRequests") || "[]"),
+  favorites: JSON.parse(localStorage.getItem("reuseFavorites") || "[]"),
+  messages: JSON.parse(localStorage.getItem("reuseMessages") || "[]"),
+  page:"home", filter:"All", search:""
+};
+
+function save(){
+ localStorage.setItem("reuseUser",JSON.stringify(state.user));
+ localStorage.setItem("reuseItems",JSON.stringify(state.items));
+ localStorage.setItem("reuseRequests",JSON.stringify(state.requests));
+ localStorage.setItem("reuseFavorites",JSON.stringify(state.favorites));
+ localStorage.setItem("reuseMessages",JSON.stringify(state.messages));
+}
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function initials(name){return (name||"U").split(" ").map(x=>x[0]).slice(0,2).join("").toUpperCase()}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2600)}
+function navigate(p){state.page=p;state.search="";render();window.scrollTo({top:0,behavior:"smooth"})}
+
+function nav(){
+ return `<div class="topbar"><div class="container nav">
+ <div class="logo"><span class="logo-mark">R</span>REUSELY</div>
+ <div class="navlinks">
+  ${["home","find","dashboard","post","requests","profile"].map(p=>`<button class="${state.page===p?"active":""}" onclick="navigate('${p}')">${({home:"Home",find:"Find Items",dashboard:"Dashboard",post:"Share Item",requests:"Requests",profile:"My Profile"})[p]}</button>`).join("")}
+ </div>
+ <div class="nav-actions">
+   <button class="icon-btn" onclick="navigate('notifications')">🔔<i class="badge-dot"></i></button>
+   <div class="avatar">${initials(state.user.name)}</div>
+   <button class="btn secondary" onclick="logout()">Logout</button>
+ </div>
+ </div></div>`;
+}
+
+function appShell(content){
+ return `${nav()}<main class="page-section"><div class="container">${content}</div></main><div class="container footer">REUSELY • Rent less. Reuse more. • Built for student communities.</div>`;
+}
+
+function render(){
+ const app=document.getElementById("app");
+ if(!state.user){renderAuth();return}
+ let content="";
+ if(state.page==="home")content=home();
+ if(state.page==="find")content=findItems();
+ if(state.page==="dashboard")content=dashboard();
+ if(state.page==="post")content=postPage();
+ if(state.page==="requests")content=requestsPage();
+ if(state.page==="profile")content=profilePage();
+ if(state.page==="notifications")content=notificationsPage();
+ if(state.page==="favorites")content=favoritesPage();
+ app.innerHTML=appShell(content);
+}
+
+function renderAuth(mode="login"){
+ document.getElementById("app").innerHTML=`<div class="auth">
+ <div class="auth-shell glass">
+  <div class="auth-art"><div class="eyebrow">Campus circular economy</div><h1 style="font-size:54px">Use what exists.<br>Share what you have.</h1><p class="lead">A trusted student-to-student marketplace for renting, borrowing and reusing useful items.</p></div>
+  <div class="auth-form">
+   <div class="logo"><span class="logo-mark">R</span>REUSELY</div>
+   <div class="auth-tabs"><button id="loginTab" class="${mode==="login"?"active":""}" onclick="renderAuth('login')">Login</button><button id="signupTab" class="${mode==="signup"?"active":""}" onclick="renderAuth('signup')">Create account</button></div>
+   ${mode==="login"?loginForm():signupForm()}
+  </div>
+ </div></div>`;
+}
+function loginForm(){
+ return `<h2>Welcome back</h2><p class="meta">Access your campus reuse network.</p>
+ <form onsubmit="login(event)">
+ <label>Email</label><input class="input" id="email" type="email" placeholder="you@campus.edu" required>
+ <label style="margin-top:12px">Password</label><input class="input" id="password" type="password" placeholder="••••••••" required>
+ <div style="display:flex;justify-content:space-between;align-items:center;margin:14px 0"><label><input type="checkbox"> Remember me</label><a href="#" onclick="toast('Demo: password reset link sent!');return false" style="color:var(--accent);font-size:12px">Forgot password?</a></div>
+ <button class="btn primary" style="width:100%">Login to Reusely →</button></form>
+ <div class="demo">Demo account: <b>student@campus.edu</b> / <b>123456</b></div>`;
+}
+function signupForm(){
+ return `<h2>Create your account</h2><p class="meta">Join your campus sharing community.</p>
+ <form onsubmit="signup(event)">
+ <div class="form-grid"><div><label>Full name</label><input class="input" id="sname" required placeholder="Your name"></div><div><label>Student ID</label><input class="input" id="sid" required placeholder="E1XXXX"></div>
+ <div><label>Email</label><input class="input" id="semail" type="email" required placeholder="you@campus.edu"></div><div><label>Password</label><input class="input" id="spass" type="password" required placeholder="Create password"></div>
+ <div class="full"><label>Campus / College</label><input class="input" id="scampus" required placeholder="Your campus"></div></div>
+ <button class="btn primary" style="width:100%;margin-top:18px">Create Reusely account →</button></form>`;
+}
+function login(e){
+ e.preventDefault();
+ const email=document.getElementById("email").value.trim().toLowerCase();
+ const password=document.getElementById("password").value;
+ const savedAccount=JSON.parse(localStorage.getItem("reuselyAccount") || "null");
+ if(email==="student@campus.edu"&&password==="123456"){
+   state.user={name:"Alex Student",email,studentId:"E1A042",campus:"RK Valley Campus",trust:4.9,points:240,joined:"September 2026"};
+   save();state.page="home";render();toast("Welcome back, Alex!");return;
+ }
+ if(savedAccount && email===savedAccount.email && password===savedAccount.password){
+   state.user={name:savedAccount.name,email:savedAccount.email,studentId:savedAccount.studentId,campus:savedAccount.campus,trust:savedAccount.trust,points:savedAccount.points,joined:savedAccount.joined};
+   save();state.page="home";render();toast("Welcome back, "+state.user.name+"!");return;
+ }
+ toast("Invalid email or password. Please use the details from your created account.");
+}
+function signup(e){
+ e.preventDefault();
+ const account={name:document.getElementById("sname").value.trim(),email:document.getElementById("semail").value.trim().toLowerCase(),password:document.getElementById("spass").value,studentId:document.getElementById("sid").value.trim(),campus:document.getElementById("scampus").value.trim(),trust:5,points:20,joined:"October 2026"};
+ localStorage.setItem("reuselyAccount",JSON.stringify(account));
+ state.user={name:account.name,email:account.email,studentId:account.studentId,campus:account.campus,trust:account.trust,points:account.points,joined:account.joined};
+ save();state.page="home";render();toast("Account created successfully!");
+}
+function logout(){state.user=null;save();renderAuth();toast("Logged out safely.")}
+
+function home(){
+ const available=state.items.filter(i=>i.available).length;
+ return `<section class="hero"><div><div class="eyebrow">Student-to-student sharing</div><h1>Why buy it<br>when you can <span style="color:var(--accent)">reuse it?</span></h1><p class="lead">Find a laptop for a week, borrow a calculator for an exam, or give your unused items a second life—all inside a trusted campus network.</p>
+ <div class="hero-actions"><button class="btn primary" onclick="navigate('find')">Explore items ↗</button><button class="btn secondary" onclick="navigate('post')">Share something</button></div>
+ <div class="stat-grid"><div class="stat glass"><strong>${available}</strong><span>items available</span></div><div class="stat glass"><strong>4.9★</strong><span>community trust</span></div><div class="stat glass"><strong>72%</strong><span>less idle stuff</span></div><div class="stat glass"><strong>24h</strong><span>typical response</span></div></div></div>
+ <div class="hero-card glass"><div class="floating-chip chip1">♻️ <b>+240</b><br><small>Reuse points</small></div><div class="floating-chip chip2">🛡️ Verified campus users</div></div></section>
+ <div class="section-head"><div><div class="eyebrow">Smart discovery</div><h2>Popular around campus</h2></div><button class="btn secondary" onclick="navigate('find')">View all →</button></div>
+ <div class="items-grid">${state.items.slice(0,6).map(itemCard).join("")}</div>`;
+}
+
+function itemCard(i){
+ const fav=state.favorites.includes(i.id);
+ return `<article class="item-card glass"><div class="item-img" style="background-image:url('${i.img}')"><button class="heart" onclick="toggleFav(${i.id})">${fav?"♥":"♡"}</button></div>
+ <div class="item-body"><div style="display:flex;justify-content:space-between;gap:8px"><div><div class="item-title">${esc(i.title)}</div><div class="meta">${esc(i.owner)} • ${i.location}</div></div><span class="tag">${esc(i.cat)}</span></div>
+ <p class="meta">${esc(i.desc)}</p><div class="card-row"><span class="price">${i.price?`₹${i.price}/${i.unit}`:"FREE BORROW"}</span><span class="trust">★ ${i.rating}</span></div>
+ <div class="card-row"><button class="btn secondary" onclick="viewItem(${i.id})">Details</button><button class="btn primary" onclick="openRequest(${i.id})">Request</button></div></div></article>`;
+}
+
+function findItems(){
+ let list=state.items.filter(i=>i.available);
+ if(state.filter!=="All")list=list.filter(i=>i.cat===state.filter||i.type===state.filter);
+ if(state.search)list=list.filter(i=>(i.title+i.cat+i.owner+i.location+i.desc).toLowerCase().includes(state.search.toLowerCase()));
+ const cats=["All","Electronics","Books","Study","Creative","Transport","Tools","Rent","Borrow"];
+ return `<div class="section-head"><div><div class="eyebrow">Discover</div><h2>Find an item</h2><p class="meta">Search by item, category, location or owner.</p></div><button class="btn primary" onclick="navigate('post')">+ Share an item</button></div>
+ <div class="searchbar"><input class="input" placeholder="🔎 Search laptops, books, calculators..." value="${esc(state.search)}" oninput="state.search=this.value;render()"><button class="btn secondary" onclick="toast('Smart match scans item names, categories and campus locations.')">✨ Smart Match</button></div>
+ <div class="filters">${cats.map(c=>`<button class="filter ${state.filter===c?"active":""}" onclick="state.filter='${c}';render()">${c}</button>`).join("")}</div>
+ <div style="margin:20px 0;color:var(--muted);font-size:13px">${list.length} matching items • <span style="color:var(--accent)">Verified campus community</span></div>
+ <div class="items-grid">${list.length?list.map(itemCard).join(""):`<div class="empty glass" style="grid-column:1/-1"><h3>No matching items</h3><p>Try another keyword or category.</p><button class="btn secondary" onclick="state.search='';state.filter='All';render()">Reset filters</button></div>`}</div>`;
+}
+
+function viewItem(id){
+ const i=state.items.find(x=>x.id===id);
+ showModal(`<div class="modal-head"><div><div class="eyebrow">${i.type} • ${i.cat}</div><h2>${esc(i.title)}</h2></div><button class="close" onclick="closeModal()">×</button></div>
+ <img src="${i.img}" style="width:100%;height:240px;object-fit:cover;border-radius:18px">
+ <div class="card-row"><span class="price">${i.price?`₹${i.price}/${i.unit}`:"Free to borrow"}</span><span class="trust">★ ${i.rating} • ${esc(i.owner)}</span></div>
+ <p class="lead" style="font-size:15px">${esc(i.desc)}</p>
+ <div class="panel" style="margin:15px 0;background:rgba(255,255,255,.04)"><b>📍 Pickup</b><p class="meta">${esc(i.location)} • Exact meeting point shared after approval</p><b>🛡️ Trust</b><p class="meta">Owner rating ${i.rating}/5 • Campus profile verified</p></div>
+ <div class="card-row"><button class="btn secondary" onclick="messageOwner(${i.id})">💬 Message owner</button><button class="btn primary" onclick="closeModal();openRequest(${i.id})">Request this item</button></div>`);
+}
+function openRequest(id){
+ const i=state.items.find(x=>x.id===id);
+ showModal(`<div class="modal-head"><h2>Request ${esc(i.title)}</h2><button class="close" onclick="closeModal()">×</button></div>
+ <form onsubmit="submitRequest(event,${id})"><div class="form-grid"><div><label>Start date</label><input class="input" id="rstart" type="date" required></div><div><label>End date</label><input class="input" id="rend" type="date" required></div>
+ <div><label>Mode</label><select class="select" id="rmode"><option>${i.type}</option><option>Borrow</option><option>Rent</option></select></div><div><label>Pickup preference</label><select class="select" id="rpickup"><option>Campus meeting point</option><option>Library entrance</option><option>Hostel gate</option></select></div>
+ <div class="full"><label>Message to owner</label><textarea class="textarea" id="rmsg" placeholder="Tell the owner why you need it and how you will take care of it." required></textarea></div></div>
+ <div class="panel" style="margin:15px 0;background:rgba(94,231,197,.06)"><b>🤝 Reuse Promise</b><p class="meta">I will return the item on time, keep it safe and report any issue honestly.</p></div>
+ <button class="btn primary" style="width:100%">Send request →</button></form>`);
+}
+function submitRequest(e,id){
+ e.preventDefault();const i=state.items.find(x=>x.id===id);
+ state.requests.unshift({id:Date.now(),itemId:id,item:i.title,owner:i.owner,start:document.getElementById("rstart").value,end:document.getElementById("rend").value,mode:document.getElementById("rmode").value,status:"Pending",msg:document.getElementById("rmsg").value});
+ save();closeModal();toast("Request sent! Owner has been notified.");navigate("requests");
+}
+
+function dashboard(){
+ const mine=state.requests;const approved=mine.filter(r=>r.status==="Approved").length;const pending=mine.filter(r=>r.status==="Pending").length;
+ return `<div class="section-head"><div><div class="eyebrow">Your activity</div><h2>Good morning, ${esc(state.user.name.split(" ")[0])} 👋</h2><p class="meta">Your campus reuse command center.</p></div><button class="btn primary" onclick="navigate('find')">Find something</button></div>
+ <div class="stat-grid"><div class="stat glass"><strong>${state.user.points}</strong><span>Reuse points</span></div><div class="stat glass"><strong>${approved}</strong><span>active loans</span></div><div class="stat glass"><strong>${pending}</strong><span>pending requests</span></div><div class="stat glass"><strong>${state.favorites.length}</strong><span>saved items</span></div></div>
+ <div class="dashboard-grid"><div class="panel glass"><div class="section-head" style="margin:0 0 8px"><h3>♻️ Your impact</h3><span class="tag green">Eco score</span></div><p class="meta">Every reuse keeps useful products in circulation longer.</p><div class="progress"><i style="width:${Math.min(100,state.user.points/4)}%"></i></div><div class="card-row"><span class="meta">Progress to Green Champion</span><b>${Math.min(100,Math.round(state.user.points/4))}%</b></div><div class="kpi" style="margin-top:20px"><div><b>${Math.floor(state.user.points/30)}</b><small>items reused</small></div><div><b>${Math.floor(state.user.points/80)}kg</b><small>estimated waste avoided</small></div><div><b>${Math.floor(state.user.points/20)}h</b><small>community saved</small></div></div></div>
+ <div class="panel glass"><h3>🛡️ Trust profile</h3><div class="trust" style="margin:18px 0"><div class="big-avatar" style="width:55px;height:55px;border-radius:18px;font-size:18px">${initials(state.user.name)}</div><div><b>${esc(state.user.name)}</b><div class="stars">★★★★★ <span style="color:var(--muted);font-size:12px">${state.user.trust}</span></div></div></div><div class="meta">✓ Campus email verified<br>✓ Student ID added<br>✓ Community member</div></div></div>
+ <div class="section-head"><h3>Recent activity</h3><button class="btn secondary" onclick="navigate('requests')">All requests</button></div>
+ <div class="panel glass">${mine.length?mine.slice(0,5).map(r=>`<div class="activity"><div class="activity-icon">${r.status==="Approved"?"✓":r.status==="Pending"?"⏳":"!"}</div><div style="flex:1"><b>${esc(r.item)}</b><div class="meta">${r.mode} • ${r.start||"Date pending"} → ${r.end||"—"} • Owner: ${esc(r.owner)}</div></div><span class="tag ${r.status==="Approved"?"green":r.status==="Pending"?"yellow":""}">${r.status}</span></div>`).join(""):`<div class="empty">No requests yet. Find an item to get started.</div>`}</div>`;
+}
+
+function postPage(){
+ return `<div class="section-head"><div><div class="eyebrow">Give it a second life</div><h2>Share an unused item</h2><p class="meta">Turn idle stuff into useful resources for another student.</p></div></div>
+ <div class="panel glass"><form onsubmit="postItem(event)"><div class="form-grid">
+ <div><label>Item name</label><input class="input" id="pname" required placeholder="e.g. Arduino kit"></div><div><label>Category</label><select class="select" id="pcat"><option>Electronics</option><option>Books</option><option>Study</option><option>Creative</option><option>Transport</option><option>Tools</option></select></div>
+ <div><label>Share mode</label><select class="select" id="ptype"><option>Borrow</option><option>Rent</option></select></div><div><label>Price (₹) — enter 0 for free</label><input class="input" id="pprice" type="number" min="0" value="0"></div>
+ <div><label>Price unit</label><select class="select" id="punit"><option>day</option><option>week</option><option>semester</option></select></div><div><label>Pickup location</label><input class="input" id="ploc" required placeholder="Library Block"></div>
+ <div class="full"><label>Description</label><textarea class="textarea" id="pdesc" required placeholder="Condition, what is included, ideal use, restrictions..."></textarea></div>
+ <div class="full"><label>Image URL (optional)</label><input class="input" id="pimg" placeholder="https://..."><small class="meta">You can leave this blank; a neutral project image will be used.</small></div>
+ </div><div class="panel" style="margin-top:18px;background:rgba(94,231,197,.05)"><b>✨ Listing quality assistant</b><p class="meta">Clear descriptions + realistic pickup details help students request with confidence.</p></div>
+ <button class="btn primary" style="margin-top:18px">Publish item →</button></form></div>`;
+}
+function postItem(e){
+ e.preventDefault();const type=document.getElementById("ptype").value,price=Number(document.getElementById("pprice").value||0);
+ const newItem={id:Date.now(),title:document.getElementById("pname").value,cat:document.getElementById("pcat").value,type,price,unit:document.getElementById("punit").value,location:document.getElementById("ploc").value,owner:state.user.name,rating:5,img:document.getElementById("pimg").value||img.notes,desc:document.getElementById("pdesc").value,available:true};
+ state.items.unshift(newItem);state.user.points+=15;save();toast("Item published! +15 reuse points");navigate("find");
+}
+
+function requestsPage(){
+ return `<div class="section-head"><div><div class="eyebrow">Track & manage</div><h2>My requests</h2><p class="meta">Keep every rental and borrowing request in one place.</p></div></div>
+ <div class="panel glass">${state.requests.length?`<table class="table"><thead><tr><th>Item</th><th>Period</th><th>Mode</th><th>Status</th><th></th></tr></thead><tbody>${state.requests.map(r=>`<tr><td><b>${esc(r.item)}</b><br><span class="meta">${esc(r.owner)}</span></td><td>${r.start||"—"}<br>${r.end||"—"}</td><td>${r.mode}</td><td><span class="tag ${r.status==="Approved"?"green":r.status==="Pending"?"yellow":""}">${r.status}</span></td><td><button class="btn secondary" onclick="showRequest(${r.id})">Open</button></td></tr>`).join("")}</tbody></table>`:`<div class="empty"><h3>No requests yet</h3><p>Start by finding an item you need.</p><button class="btn primary" onclick="navigate('find')">Find items</button></div>`}</div>`;
+}
+function showRequest(id){
+ const r=state.requests.find(x=>x.id===id);
+ showModal(`<div class="modal-head"><div><div class="eyebrow">Request #${String(r.id).slice(-5)}</div><h2>${esc(r.item)}</h2></div><button class="close" onclick="closeModal()">×</button></div>
+ <div class="timeline"><div class="step done"><strong>Request sent</strong><span>${r.start||"Date selected"} • Owner: ${esc(r.owner)}</span></div><div class="step ${r.status==="Approved"?"done":""}"><strong>Owner decision</strong><span>${r.status==="Approved"?"Approved — pickup can be arranged":"Waiting for owner response"}</span></div><div class="step"><strong>Pickup / handover</strong><span>Exact location is shared after approval.</span></div><div class="step"><strong>Return & review</strong><span>Return on time and rate the experience.</span></div></div>
+ <div class="panel" style="background:rgba(255,255,255,.04)"><b>Your message</b><p class="meta">${esc(r.msg)}</p></div>
+ <div class="card-row"><button class="btn secondary" onclick="messageText('${esc(r.owner)}')">💬 Message owner</button>${r.status==="Pending"?`<button class="btn danger" onclick="cancelRequest(${r.id})">Cancel request</button>`:""}</div>`);
+}
+function cancelRequest(id){state.requests=state.requests.filter(r=>r.id!==id);save();closeModal();toast("Request cancelled.");render()}
+function messageOwner(id){const i=state.items.find(x=>x.id===id);closeModal();showModal(`<div class="modal-head"><h2>Message ${esc(i.owner)}</h2><button class="close" onclick="closeModal()">×</button></div><p class="meta">Keep communication respectful and share only what is necessary for the handover.</p><textarea class="textarea" id="msgText" placeholder="Hi! Is this item available for my project?"></textarea><button class="btn primary" style="width:100%;margin-top:12px" onclick="sendMessage('${esc(i.owner)}')">Send message →</button>`)}
+function messageText(owner){closeModal();showModal(`<div class="modal-head"><h2>Message ${esc(owner)}</h2><button class="close" onclick="closeModal()">×</button></div><textarea class="textarea" id="msgText" placeholder="Type your message..."></textarea><button class="btn primary" style="width:100%;margin-top:12px" onclick="sendMessage('${esc(owner)}')">Send message →</button>`)}
+function sendMessage(owner){const t=document.getElementById("msgText").value.trim();if(!t)return toast("Write a message first.");state.messages.unshift({id:Date.now(),owner,text:t,time:new Date().toLocaleString()});save();closeModal();toast("Message sent.");}
+
+function profilePage(){
+ return `<div class="panel glass profile-head"><div class="big-avatar">${initials(state.user.name)}</div><div style="flex:1"><div class="eyebrow">Verified campus profile</div><h2>${esc(state.user.name)}</h2><p class="meta">${esc(state.user.email)} • ${esc(state.user.studentId)} • ${esc(state.user.campus)}</p><div class="stars">★★★★★ <span style="color:var(--muted)"> ${state.user.trust} trust rating</span></div></div><button class="btn secondary" onclick="editProfile()">Edit profile</button></div>
+ <div class="stat-grid"><div class="stat glass"><strong>${state.user.points}</strong><span>Reuse points</span></div><div class="stat glass"><strong>${state.items.filter(i=>i.owner===state.user.name).length}</strong><span>items shared</span></div><div class="stat glass"><strong>${state.requests.length}</strong><span>requests made</span></div><div class="stat glass"><strong>✓</strong><span>identity verified</span></div></div>
+ <div class="dashboard-grid"><div class="panel glass"><h3>🛡️ Trust & safety</h3><div class="activity"><div class="activity-icon">✓</div><div><b>Campus identity</b><div class="meta">Student ID linked to profile</div></div></div><div class="activity"><div class="activity-icon">★</div><div><b>Community reputation</b><div class="meta">Built through successful exchanges and reviews</div></div></div><div class="activity"><div class="activity-icon">🔒</div><div><b>Privacy-first contact</b><div class="meta">Contact details stay private until both sides agree to a handover</div></div></div></div>
+ <div class="panel glass"><h3>🏆 Reuse level</h3><div style="font-size:38px;font-weight:900;margin:12px 0">${state.user.points<100?"Starter":state.user.points<300?"Reuse Builder":"Green Champion"}</div><p class="meta">Earn points by sharing, completing exchanges and leaving helpful reviews.</p><div class="progress"><i style="width:${Math.min(100,state.user.points/4)}%"></i></div></div></div>`;
+}
+function editProfile(){
+ showModal(`<div class="modal-head"><h2>Edit profile</h2><button class="close" onclick="closeModal()">×</button></div><label>Full name</label><input class="input" id="ename" value="${esc(state.user.name)}"><label style="margin-top:12px">Campus</label><input class="input" id="ecampus" value="${esc(state.user.campus)}"><button class="btn primary" style="width:100%;margin-top:18px" onclick="saveProfile()">Save changes</button>`);
+}
+function saveProfile(){state.user.name=document.getElementById("ename").value;state.user.campus=document.getElementById("ecampus").value;save();closeModal();toast("Profile updated.");render()}
+
+function notificationsPage(){
+ return `<div class="section-head"><div><div class="eyebrow">Stay in the loop</div><h2>Notifications</h2></div></div>
+ <div class="panel glass"><div class="activity"><div class="activity-icon">♻️</div><div><b>Welcome to Reusely</b><div class="meta">Your trust-first reuse profile is ready.</div></div><span class="tag green">New</span></div>
+ <div class="activity"><div class="activity-icon">🛡️</div><div><b>Safety reminder</b><div class="meta">Meet in a public campus location and confirm the item's condition at handover.</div></div></div>
+ <div class="activity"><div class="activity-icon">✨</div><div><b>Smart Match</b><div class="meta">Try searching “project” or “exam” to discover relevant items.</div></div></div></div>`;
+}
+function favoritesPage(){
+ const list=state.items.filter(i=>state.favorites.includes(i.id));
+ return `<div class="section-head"><div><div class="eyebrow">Saved for later</div><h2>My saved items</h2></div></div><div class="items-grid">${list.length?list.map(itemCard).join(""):`<div class="empty glass" style="grid-column:1/-1"><h3>No saved items</h3><p>Tap ♡ on an item to save it.</p><button class="btn primary" onclick="navigate('find')">Browse items</button></div>`}</div>`;
+}
+function toggleFav(id){if(state.favorites.includes(id))state.favorites=state.favorites.filter(x=>x!==id);else state.favorites.push(id);save();render();toast(state.favorites.includes(id)?"Saved to favorites":"Removed from favorites")}
+function showModal(content){document.getElementById("modalRoot").innerHTML=`<div class="modal-wrap show" onclick="if(event.target===this)closeModal()"><div class="modal glass">${content}</div></div>`}
+function closeModal(){document.getElementById("modalRoot").innerHTML=""}
+
+render();
+</script>
+</body>
+</html>
